@@ -3,8 +3,7 @@
    VITE_API_URL env var (see .env.example) — defaults to localhost:8000,
    the standard `python manage.py runserver` address.
    ========================================================================= */
-const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/$/, '');
-
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').trim().replace(/\/$/, ''); 
 const TOKEN_KEY = 'kpi_api_token_v1';
 
 export function getToken() { return localStorage.getItem(TOKEN_KEY); }
