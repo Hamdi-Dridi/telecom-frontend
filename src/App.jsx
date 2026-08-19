@@ -61,7 +61,6 @@ export default function App() {
 
       <footer>
         <div>—</div>
-        <div className="mono">v1.0 — édition React</div>
       </footer>
 
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />

@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useAppState } from '../context/AppStateContext.jsx';
 import logo from '../assets/logo.png';
 
+/* ── SVG Icons ──────────────────────────────────────────────────── */
 function MailIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,6 +17,23 @@ function LockIcon() {
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="4.5" y="9" width="11" height="8" rx="2" stroke="currentColor" strokeWidth="1.4" />
       <path d="M6.5 9V6.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M3.5 17c0-3.314 2.91-6 6.5-6s6.5 2.686 6.5 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+function GlobeIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M10 2.5C10 2.5 7.5 6 7.5 10s2.5 7.5 2.5 7.5M10 2.5C10 2.5 12.5 6 12.5 10S10 17.5 10 17.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M2.5 10h15" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -34,6 +52,7 @@ function EyeIcon({ off }) {
   );
 }
 
+/* ── Password field with show/hide toggle ───────────────────────── */
 function PasswordField({ id, value, onChange, placeholder = '••••••••' }) {
   const [visible, setVisible] = useState(false);
   return (
@@ -46,13 +65,57 @@ function PasswordField({ id, value, onChange, placeholder = '••••••�
         onChange={onChange}
         placeholder={placeholder}
       />
-      <button type="button" className="input-toggle" onClick={() => setVisible(v => !v)} aria-label={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+      <button
+        type="button"
+        className="input-toggle"
+        onClick={() => setVisible(v => !v)}
+        aria-label={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+      >
         <EyeIcon off={visible} />
       </button>
     </div>
   );
 }
 
+/* ── Left decorative panel ──────────────────────────────────────── */
+function AuthLeftPanel() {
+  return (
+    <div className="auth-left">
+      {/* Ambient blobs */}
+      <div className="auth-left-blob auth-left-blob--a" />
+      <div className="auth-left-blob auth-left-blob--b" />
+      <div className="auth-left-blob auth-left-blob--c" />
+
+      {/* Brand */}
+      <div className="auth-left-brand">
+        <img src={logo} alt="Tunisie Telecom" className="auth-left-logo" />
+        <span className="auth-left-title">Telecom Performance Analytics</span>
+      </div>
+
+      {/* Tagline */}
+      <div className="auth-left-tagline">
+        Pilotez la qualité réseau<br />de <strong>Tunisie Telecom</strong> en temps réel.
+      </div>
+
+      {/* Feature pills */}
+      <div className="auth-left-features">
+        {[
+          { icon: '📊', label: 'Tableaux de bord en temps réel' },
+          { icon: '📍', label: 'Suivi régional & multi-sites' },
+          { icon: '🎯', label: 'Objectifs KPI automatisés' },
+          { icon: '📄', label: 'Rapports PDF professionnels' },
+        ].map(f => (
+          <div key={f.label} className="auth-left-pill">
+            <span>{f.icon}</span>
+            <span>{f.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Main Auth Screen ───────────────────────────────────────────── */
 export default function AuthScreen() {
   const { login, signup } = useAuth();
   const { regions } = useAppState();
@@ -121,103 +184,171 @@ export default function AuthScreen() {
 
   return (
     <div className="auth-screen open">
-      <div className="auth-card">
-        <div className="auth-brand">
-          <img className="brand-mark" src={logo} alt="Tunisie Telecom" />
-          <div className="brand-text">
-            <div className="t1">Telecom Performance Analytics</div>
+      <div className="auth-shell">
+        {/* ── Left decorative panel ── */}
+        <AuthLeftPanel />
+
+        {/* ── Right form panel ── */}
+        <div className="auth-right">
+
+          {/* Mobile-only brand (left panel hidden on small screens) */}
+          <div className="auth-right-mobile-brand">
+            <img src={logo} alt="Tunisie Telecom" style={{ height: 28 }} />
+            <span>Telecom Performance Analytics</span>
+          </div>
+
+          {/* ── Login form ── */}
+          {panel === 'login' && (
+            <form className="auth-panel active" onSubmit={handleLogin}>
+              <div className="auth-form-header">
+                <div className="auth-form-icon">
+                  <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                    <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6"/>
+                    <path d="M4 20c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2>Bon retour</h2>
+                  <div className="auth-form-sub">Connectez-vous à votre espace analytique.</div>
+                </div>
+              </div>
+
+              {loginError && <div className="auth-error show">{loginError}</div>}
+              {loginInfo  && <div className="auth-info show">{loginInfo}</div>}
+
+              <div className="auth-field">
+                <label htmlFor="loginEmail">Adresse e-mail</label>
+                <div className="input-group">
+                  <span className="input-ic"><MailIcon /></span>
+                  <input type="email" id="loginEmail" placeholder="vous@exemple.tn"
+                    value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="loginPassword">Mot de passe</label>
+                <PasswordField id="loginPassword" value={loginPassword}
+                  onChange={e => setLoginPassword(e.target.value)} />
+              </div>
+
+              <button type="submit" className="btn btn-primary auth-submit" disabled={submitting}>
+                {submitting
+                  ? <><span className="auth-spinner" />Connexion…</>
+                  : <>Se connecter <span className="auth-submit-arrow">→</span></>}
+              </button>
+
+              <div className="auth-divider"><span>Pas encore de compte ?</span></div>
+              <button type="button" className="auth-switch-btn" onClick={() => switchTo('signup')}>
+                Créer un compte
+              </button>
+            </form>
+          )}
+
+          {/* ── Sign-up form ── */}
+          {panel === 'signup' && (
+            <form className="auth-panel active" onSubmit={handleSignup}>
+              <div className="auth-form-header">
+                <div className="auth-form-icon auth-form-icon--teal">
+                  <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                    <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6"/>
+                    <path d="M4 20c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+                    <path d="M19 5v4M17 7h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2>Créer un compte</h2>
+                  <div className="auth-form-sub">Votre accès sera activé après validation.</div>
+                </div>
+              </div>
+
+              {signupError && <div className="auth-error show">{signupError}</div>}
+
+              <div className="auth-row2">
+                <div className="auth-field">
+                  <label htmlFor="signupFirstName">Prénom</label>
+                  <div className="input-group">
+                    <span className="input-ic"><UserIcon /></span>
+                    <input type="text" id="signupFirstName" placeholder="Prénom"
+                      value={signupFirstName} onChange={e => setSignupFirstName(e.target.value)} />
+                  </div>
+                </div>
+                <div className="auth-field">
+                  <label htmlFor="signupLastName">Nom</label>
+                  <div className="input-group">
+                    <span className="input-ic"><UserIcon /></span>
+                    <input type="text" id="signupLastName" placeholder="Nom"
+                      value={signupLastName} onChange={e => setSignupLastName(e.target.value)} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="signupEmail">Adresse e-mail</label>
+                <div className="input-group">
+                  <span className="input-ic"><MailIcon /></span>
+                  <input type="email" id="signupEmail" placeholder="vous@exemple.tn"
+                    value={signupEmail} onChange={e => setSignupEmail(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="signupRegion">Site / Région</label>
+                <div className="input-group">
+                  <span className="input-ic"><GlobeIcon /></span>
+                  <select id="signupRegion" value={signupRegion}
+                    onChange={e => setSignupRegion(e.target.value)}
+                    style={{ paddingLeft: 40 }}>
+                    {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="auth-row2">
+                <div className="auth-field">
+                  <label htmlFor="signupPassword">Mot de passe</label>
+                  <PasswordField id="signupPassword" value={signupPassword}
+                    onChange={e => setSignupPassword(e.target.value)} />
+                </div>
+                <div className="auth-field">
+                  <label htmlFor="signupConfirm">Confirmer</label>
+                  <PasswordField id="signupConfirm" value={signupConfirm}
+                    onChange={e => setSignupConfirm(e.target.value)} />
+                </div>
+              </div>
+
+              <button type="submit" className="btn btn-primary auth-submit auth-submit--teal" disabled={submitting}>
+                {submitting
+                  ? <><span className="auth-spinner" />Création…</>
+                  : <>Créer mon compte <span className="auth-submit-arrow">→</span></>}
+              </button>
+
+              <div className="auth-divider"><span>Déjà un compte ?</span></div>
+              <button type="button" className="auth-switch-btn" onClick={() => switchTo('login')}>
+                Se connecter
+              </button>
+            </form>
+          )}
+
+          {/* ── Pending confirmation ── */}
+          {panel === 'pending' && (
+            <div className="auth-panel active auth-pending">
+              <div className="auth-pending-icon">✓</div>
+              <h2>Compte créé avec succès</h2>
+              <div className="auth-form-sub" style={{ marginTop: 8 }}>
+                Votre compte <strong>{pendingEmail}</strong> est en attente d'approbation par un administrateur.
+                Vous recevrez l'accès dès qu'un rôle vous aura été attribué.
+              </div>
+              <button type="button" className="btn btn-ghost auth-submit"
+                style={{ marginTop: 24 }} onClick={() => switchTo('login')}>
+                ← Retour à la connexion
+              </button>
+            </div>
+          )}
+
+          <div className="auth-right-footer">
+            © {new Date().getFullYear()} Tunisie Telecom — Tous droits réservés
           </div>
         </div>
-
-        {panel === 'login' && (
-          <form className="auth-panel active" onSubmit={handleLogin}>
-            <h2>Connexion</h2>
-            <div className="sub">Accédez à votre tableau de bord.</div>
-            {loginError && <div className="auth-error show">{loginError}</div>}
-            {loginInfo && <div className="auth-info show">{loginInfo}</div>}
-
-            <label htmlFor="loginEmail">Adresse e-mail</label>
-            <div className="input-group">
-              <span className="input-ic"><MailIcon /></span>
-              <input type="email" id="loginEmail" placeholder="vous@exemple.tn"
-                value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
-            </div>
-
-            <label htmlFor="loginPassword">Mot de passe</label>
-            <PasswordField id="loginPassword" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
-
-            <button type="submit" className="btn btn-primary auth-submit" disabled={submitting}>
-              {submitting ? 'Connexion…' : <>Se connecter <span className="auth-submit-arrow">→</span></>}
-            </button>
-            <div className="auth-switch">
-              Pas encore de compte ? <a onClick={() => switchTo('signup')}>Créer un compte</a>
-            </div>
-          </form>
-        )}
-
-        {panel === 'signup' && (
-          <form className="auth-panel active" onSubmit={handleSignup}>
-            <h2>Créer un compte</h2>
-            <div className="sub">Votre compte sera activé après validation par un administrateur.</div>
-            {signupError && <div className="auth-error show">{signupError}</div>}
-
-            <div className="auth-row2">
-              <div>
-                <label htmlFor="signupFirstName">Prénom</label>
-                <input type="text" id="signupFirstName" placeholder="Prénom"
-                  value={signupFirstName} onChange={e => setSignupFirstName(e.target.value)} />
-              </div>
-              <div>
-                <label htmlFor="signupLastName">Nom</label>
-                <input type="text" id="signupLastName" placeholder="Nom"
-                  value={signupLastName} onChange={e => setSignupLastName(e.target.value)} />
-              </div>
-            </div>
-
-            <label htmlFor="signupEmail">Adresse e-mail</label>
-            <div className="input-group">
-              <span className="input-ic"><MailIcon /></span>
-              <input type="email" id="signupEmail" placeholder="vous@exemple.tn"
-                value={signupEmail} onChange={e => setSignupEmail(e.target.value)} />
-            </div>
-
-            <label htmlFor="signupRegion">Site / Région</label>
-            <select id="signupRegion" value={signupRegion} onChange={e => setSignupRegion(e.target.value)}>
-              {regions.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-
-            <div className="auth-row2">
-              <div>
-                <label htmlFor="signupPassword">Mot de passe</label>
-                <PasswordField id="signupPassword" value={signupPassword} onChange={e => setSignupPassword(e.target.value)} />
-              </div>
-              <div>
-                <label htmlFor="signupConfirm">Confirmer</label>
-                <PasswordField id="signupConfirm" value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} />
-              </div>
-            </div>
-
-            <button type="submit" className="btn btn-primary auth-submit" disabled={submitting}>
-              {submitting ? 'Création…' : <>Créer mon compte <span className="auth-submit-arrow">→</span></>}
-            </button>
-            <div className="auth-switch">
-              Déjà un compte ? <a onClick={() => switchTo('login')}>Se connecter</a>
-            </div>
-          </form>
-        )}
-
-        {panel === 'pending' && (
-          <div className="auth-panel active">
-            <h2>Compte créé ✓</h2>
-            <div className="sub" style={{ marginBottom: 4 }}>
-              Votre compte <b>{pendingEmail}</b> a été créé avec succès et est en attente d'approbation par un administrateur.
-              Vous recevrez l'accès dès qu'un rôle (Manager ou Administrateur) vous aura été attribué.
-            </div>
-            <button type="button" className="btn btn-ghost auth-submit" style={{ marginTop: 16 }} onClick={() => switchTo('login')}>
-              Retour à la connexion
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
