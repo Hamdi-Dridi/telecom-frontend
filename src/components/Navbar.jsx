@@ -25,10 +25,12 @@ export default function Navbar({ activeView, onNavigate, onOpenSettings }) {
 
   useEffect(() => {
     function onDocClick(e) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setDropdownOpen(false);
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
     }
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
   }, []);
 
   const tabs = isAdmin ? [...TABS, { key: 'utilisateurs', label: 'Utilisateurs' }] : TABS;
@@ -70,14 +72,19 @@ export default function Navbar({ activeView, onNavigate, onOpenSettings }) {
         </select>
 
         <div className="user-menu" ref={dropdownRef}>
-          <div className="avatar-btn" onClick={() => setDropdownOpen(o => !o)}>
+          <button
+            type="button"
+            className={`avatar-btn ${dropdownOpen ? 'open' : ''}`}
+            onClick={() => setDropdownOpen(o => !o)}
+            aria-expanded={dropdownOpen}
+          >
             <div className="avatar-circle">{initialsOf(fullName || 'U')}</div>
             <div className="who">
               <span className="n">{fullName}</span>
               <span className="r">{roleLabel(currentUser)}</span>
             </div>
-            <span>⌄</span>
-          </div>
+            <span className="chev">⌄</span>
+          </button>
 
           {dropdownOpen && (
             <div className="avatar-dropdown open">
@@ -88,10 +95,18 @@ export default function Navbar({ activeView, onNavigate, onOpenSettings }) {
                   {roleLabel(currentUser)}
                 </span>
               </div>
-              <button className="ad-item" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); onOpenSettings(); }}>
+              <button
+                type="button"
+                className="ad-item"
+                onClick={() => { setDropdownOpen(false); onOpenSettings(); }}
+              >
                 <span className="ic">⚙️</span> Paramètres
               </button>
-              <button className="ad-item danger" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); logout(); }}>
+              <button
+                type="button"
+                className="ad-item danger"
+                onClick={() => { setDropdownOpen(false); logout(); }}
+              >
                 <span className="ic">⎋</span> Déconnexion
               </button>
             </div>
